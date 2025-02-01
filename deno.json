@@ -1,0 +1,24 @@
+{
+  "$schema": "https://deno.land/x/deno/cli/schemas/config-file.v1.json",
+  "lock": false,
+  "exclude": ["_cache/", "_site/", "examples/"],
+  "fmt": {
+    "proseWrap": "preserve"
+  },
+  "imports": {
+    "lume/": "https://deno.land/x/lume@v2.5.1/"
+  },
+  "tasks": {
+    "lume": "echo \"import 'lume/cli.ts'\" | deno run -A -",
+    "build": "deno task lume",
+    "serve": "deno task lume -s"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "npm:react",
+    "jsxImportSourceTypes": "npm:@types/react",
+    "types": [
+      "lume/types.ts"
+    ]
+  }
+}
