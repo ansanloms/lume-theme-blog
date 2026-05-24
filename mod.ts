@@ -17,8 +17,14 @@ export default (options: Partial<Options> = {}) => {
       "styles/palette.css",
       "styles/top.css",
       "styles/article.css",
+      "styles/shiki.css",
+      "scripts/color-scheme.mjs",
+      "scripts/mermaid.mjs",
     ].forEach((file) => {
       site.remoteFile(file, import.meta.resolve(`./${file}`));
+      if (!file.startsWith("_")) {
+        site.add(`/${file}`);
+      }
     });
   };
 };

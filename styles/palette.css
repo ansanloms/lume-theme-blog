@@ -1,9 +1,27 @@
-@import url("https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@300;400;500&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap");
-
 :root {
-  --font-family-default: "Kiwi Maru", system-ui, sans-serif;
-  --font-family-code: "Share Tech Mono", monospace;
+  @media (640px >= width) {
+    --is-mobile: true;
+  }
+
+  @media (640px < width) {
+    --is-pc: true;
+  }
+
+  --font-family-default:
+    "Inter",
+    "Helvetica Neue",
+    Arial,
+    "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans",
+    "Noto Sans JP",
+    sans-serif;
+  --font-family-code:
+    "JetBrains Mono",
+    "Fira Code",
+    "Cascadia Code",
+    Consolas,
+    "Courier New",
+    monospace;
 
   /* base color */
   --color-base-hue: 180;
@@ -18,9 +36,9 @@
   --color-admonition-caution-hue: 3;
 
   /* light mode */
-  --color-light-background: hsl(var(--color-base-hue), 100%, 98%);
-  --color-light-secondary-background: hsl(var(--color-base-hue), 100%, 94%);
-  --color-light-text: hsl(var(--color-base-hue), 100%, 20%);
+  --color-light-background: hsl(var(--color-base-hue), 20%, 98%);
+  --color-light-secondary-background: hsl(var(--color-base-hue), 20%, 94%);
+  --color-light-text: hsl(var(--color-base-hue), 15%, 20%);
   --color-light-link: hsl(
     var(--color-base-hue),
     var(--color-base-saturation),
@@ -31,11 +49,11 @@
     var(--color-base-saturation),
     calc(var(--color-base-lightness) - 30%)
   );
-  --color-light-border: hsl(var(--color-base-hue), 100%, 85%);
+  --color-light-border: hsl(var(--color-base-hue), 20%, 82%);
   --color-light-heading: hsl(
     var(--color-base-hue),
-    var(--color-base-saturation),
-    40%
+    30%,
+    18%
   );
   --color-light-admonition-note-background: hsl(
     var(--color-admonition-note-hue),
@@ -139,9 +157,9 @@
   );
 
   /* dark mode */
-  --color-dark-background: hsl(var(--color-base-hue), 100%, 5%);
-  --color-dark-secondary-background: hsl(var(--color-base-hue), 100%, 10%);
-  --color-dark-text: hsl(var(--color-base-hue), 100%, 90%);
+  --color-dark-background: hsl(var(--color-base-hue), 15%, 9%);
+  --color-dark-secondary-background: hsl(var(--color-base-hue), 15%, 14%);
+  --color-dark-text: hsl(var(--color-base-hue), 20%, 88%);
   --color-dark-link: hsl(
     var(--color-base-hue),
     var(--color-base-saturation),
@@ -152,11 +170,11 @@
     var(--color-base-saturation),
     calc(var(--color-base-lightness) + 30%)
   );
-  --color-dark-border: hsl(var(--color-base-hue), 100%, 20%);
+  --color-dark-border: hsl(var(--color-base-hue), 15%, 25%);
   --color-dark-heading: hsl(
     var(--color-base-hue),
-    var(--color-base-saturation),
-    80%
+    20%,
+    95%
   );
   --color-dark-admonition-note-background: hsl(
     var(--color-admonition-note-hue),
@@ -268,18 +286,9 @@
     var(--color-light-secondary-background),
     var(--color-dark-secondary-background)
   );
-  --color-text: light-dark(
-    var(--color-light-text),
-    var(--color-dark-text)
-  );
-  --color-link: light-dark(
-    var(--color-light-link),
-    var(--color-dark-link)
-  );
-  --color-hover: light-dark(
-    var(--color-light-hover),
-    var(--color-light-hover)
-  );
+  --color-text: light-dark(var(--color-light-text), var(--color-dark-text));
+  --color-link: light-dark(var(--color-light-link), var(--color-dark-link));
+  --color-hover: light-dark(var(--color-light-hover), var(--color-dark-hover));
   --color-border: light-dark(
     var(--color-light-border),
     var(--color-dark-border)
@@ -368,4 +377,11 @@
     var(--color-light-admonition-caution-text),
     var(--color-dark-admonition-caution-text)
   );
+
+  /* pagefind */
+  --pagefind-ui-primary: var(--color-text);
+  --pagefind-ui-text: var(--color-text);
+  --pagefind-ui-background: var(--color-background);
+  --pagefind-ui-border: var(--color-border);
+  --pagefind-ui-tag: var(--color-link);
 }

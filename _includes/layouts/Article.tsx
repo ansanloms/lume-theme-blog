@@ -1,7 +1,13 @@
-import Layout from "../components/Layout.tsx";
-import * as datetime from "../../deps/@std/datetime/mod.ts";
-
 import "lume/types.ts";
+
+import Layout from "../components/Layout.tsx";
+
+/**
+ * Temporal.ZonedDateTime を ISO 8601 文字列にフォーマットする。
+ * IANA タイムゾーンアノテーション部分（`[...]`）は表示不要のため除去する。
+ */
+const formatDate = (dt: Temporal.ZonedDateTime): string =>
+  dt.toString({ timeZoneName: "never" });
 
 const MetaItem = ({ label, value }: { label: string; value: string }) => {
   return (
@@ -25,13 +31,13 @@ export default (data: Lume.Data) => {
     {
       label: "Created at",
       value: data.article?.createdAt
-        ? datetime.format(data.article.createdAt, "yyyy-MM-dd")
+        ? formatDate(data.article.createdAt)
         : undefined,
     },
     {
       label: "Updated at",
       value: data.article?.updatedAt
-        ? datetime.format(data.article.updatedAt, "yyyy-MM-dd")
+        ? formatDate(data.article.updatedAt)
         : undefined,
     },
   ].filter((item): item is Parameters<typeof MetaItem>[0] =>
@@ -42,6 +48,7 @@ export default (data: Lume.Data) => {
     <Layout data={data}>
       {metas.length > 0 && <Meta items={metas} />}
       <article className="article">
+        {/* @ts-expect-error TS2322 */}
         {data.children}
       </article>
     </Layout>
