@@ -62,7 +62,7 @@
       "sys": true
     }
   },
-    "compilerOptions": {
+  "compilerOptions": {
     "types": [
       "lume/types.ts"
     ],
@@ -78,7 +78,6 @@
       "npm:sharp"
     ]
   },
-
   "lint": {
     "plugins": [
       "jsr:@aireone/deno-lint-curly",

@@ -32,6 +32,7 @@ import {
 import { merge } from "lume/core/utils/object.ts";
 import { visit } from "./deps/unist-util-visit/index.ts";
 import type { Heading, Root } from "./deps/@types/mdast/index.ts";
+import { parseDateToZonedDateTime } from "./_includes/utils/date.ts";
 
 import "lume/types.ts";
 
@@ -123,18 +124,13 @@ export const defaults: Options = {
 };
 
 /**
- * Date を Temporal.ZonedDateTime に変換する。
- */
-const parseDateToZonedDateTime = (date: Date): Temporal.ZonedDateTime => {
-  return Temporal.Instant.fromEpochMilliseconds(date.getTime())
-    .toZonedDateTimeISO(Temporal.Now.timeZoneId());
-};
-
-/**
  * shiki で利用するインラインコードのデフォルト言語を指定する。
  * @see https://shiki.style/packages/rehype#inline-code
  */
-const remarkAddInlineCodeLang: unified.Plugin<[{ default?: string }?], Root> = (
+export const remarkAddInlineCodeLang: unified.Plugin<
+  [{ default?: string }?],
+  Root
+> = (
   options,
 ) => {
   return (tree) => {
@@ -149,7 +145,7 @@ const remarkAddInlineCodeLang: unified.Plugin<[{ default?: string }?], Root> = (
 /**
  * 任意の言語をハイライト対象外にする。
  */
-const remarkRemoveShikiHighlight: unified.Plugin<
+export const remarkRemoveShikiHighlight: unified.Plugin<
   [{ excludeLanguages: string[] }],
   Root
 > = (

@@ -1,7 +1,8 @@
 import "lume/types.ts";
 
 import Layout from "../components/Layout.tsx";
-import Meta, { formatDate, type MetaItemProps } from "../components/Meta.tsx";
+import { formatDate } from "../utils/date.ts";
+import Meta, { type MetaItemProps } from "../components/Meta.tsx";
 
 export default (data: Lume.Data) => {
   const metas: MetaItemProps[] = [

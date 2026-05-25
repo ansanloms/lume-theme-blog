@@ -1,13 +1,7 @@
 import "lume/types.ts";
 
+import { formatDate } from "../utils/date.ts";
 import Layout from "../components/Layout.tsx";
-
-/**
- * Temporal.ZonedDateTime を ISO 8601 文字列にフォーマットする。
- * IANA タイムゾーンアノテーション部分（`[...]`）は表示不要のため除去する。
- */
-const formatDate = (dt: Temporal.ZonedDateTime): string =>
-  dt.toString({ timeZoneName: "never" });
 
 const Item = ({ page }: { page: Lume.Page }) => {
   const createdAt = page.data.article?.createdAt
