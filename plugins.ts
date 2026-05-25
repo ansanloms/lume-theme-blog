@@ -123,6 +123,51 @@ export const defaults: Options = {
 };
 
 /**
+ * コードブロックの言語指定から `lang:filename` 形式のファイル名を分離する。
+ *
+ * `typescript:test.ts` のように指定すると、`node.lang` を `typescript` に修正し、
+ * `filename=test.ts` を `node.meta` に付加する。
+ */
+export const remarkCodeBlockFilename: unified.Plugin<[], Root> = () => {
+  return (tree) => {
+    visit(tree, "code", (node) => {
+      if (!node.lang) {
+        return;
+      }
+      const colonIndex = node.lang.indexOf(":");
+      if (colonIndex < 1 || colonIndex === node.lang.length - 1) {
+        return;
+      }
+
+      const filename = node.lang.slice(colonIndex + 1);
+      node.lang = node.lang.slice(0, colonIndex);
+      node.meta = node.meta
+        ? `${node.meta} filename=${filename}`
+        : `filename=${filename}`;
+    });
+  };
+};
+
+/**
+ * Shiki transformer: meta の `filename=...` を `<pre>` の `data-filename` 属性に変換する。
+ */
+export const transformerFilename = () => ({
+  name: "transformer-filename",
+  pre(this: { options: { meta?: { __raw?: string } } }, node: {
+    properties: Record<string, unknown>;
+  }) {
+    const raw = this.options.meta?.__raw;
+    if (!raw) {
+      return;
+    }
+    const match = raw.match(/(?:^|\s)filename=(\S+)/);
+    if (match) {
+      node.properties["data-filename"] = match[1];
+    }
+  },
+});
+
+/**
  * shiki で利用するインラインコードのデフォルト言語を指定する。
  * @see https://shiki.style/packages/rehype#inline-code
  */
@@ -182,6 +227,7 @@ export default function (userOptions?: Partial<Options>) {
           remarkPlugins: [
             remarkGfm,
             remarkExtendedTable,
+            remarkCodeBlockFilename,
             [remarkAddInlineCodeLang, { default: "txt" }],
             [remarkRemoveShikiHighlight, {
               excludeLanguages: options.markdown.syntaxHighlight.exclude,
@@ -216,6 +262,7 @@ export default function (userOptions?: Partial<Options>) {
                 transformerMetaHighlight(),
                 transformerMetaWordHighlight(),
                 transformerNotationFocus(),
+                transformerFilename(),
               ],
             }],
           ],

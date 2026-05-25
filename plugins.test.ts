@@ -2,6 +2,7 @@ import { assertEquals } from "jsr:@std/assert@1";
 import type { Code, InlineCode, Root } from "npm:@types/mdast@4.0.4";
 import {
   remarkAddInlineCodeLang,
+  remarkCodeBlockFilename,
   remarkRemoveShikiHighlight,
 } from "./plugins.ts";
 
@@ -9,6 +10,92 @@ import {
 // deno-lint-ignore no-explicit-any
 const applyPlugin = <T>(plugin: any, options: T): (tree: Root) => void =>
   plugin.call({}, options);
+
+// --- remarkCodeBlockFilename ---
+
+Deno.test("remarkCodeBlockFilename: lang:filename 形式からファイル名が分離される", () => {
+  const codeNode: Code = {
+    type: "code",
+    lang: "typescript:test.ts",
+    value: "const x = 1;",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, "typescript");
+  assertEquals(codeNode.meta, "filename=test.ts");
+});
+
+Deno.test("remarkCodeBlockFilename: パス付きファイル名も分離される", () => {
+  const codeNode: Code = {
+    type: "code",
+    lang: "typescript:src/utils/helper.ts",
+    value: "export const helper = () => {};",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, "typescript");
+  assertEquals(codeNode.meta, "filename=src/utils/helper.ts");
+});
+
+Deno.test("remarkCodeBlockFilename: 既存の meta がある場合は末尾に追加される", () => {
+  const codeNode: Code = {
+    type: "code",
+    lang: "typescript:test.ts",
+    meta: "{1,3}",
+    value: "const x = 1;",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, "typescript");
+  assertEquals(codeNode.meta, "{1,3} filename=test.ts");
+});
+
+Deno.test("remarkCodeBlockFilename: コロンなしの言語指定は変更されない", () => {
+  const codeNode: Code = {
+    type: "code",
+    lang: "typescript",
+    value: "const x = 1;",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, "typescript");
+  assertEquals(codeNode.meta, undefined);
+});
+
+Deno.test("remarkCodeBlockFilename: コロンの後にファイル名がない場合は変更されない", () => {
+  const codeNode: Code = {
+    type: "code",
+    lang: "typescript:",
+    value: "const x = 1;",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, "typescript:");
+  assertEquals(codeNode.meta, undefined);
+});
+
+Deno.test("remarkCodeBlockFilename: lang が未設定の場合は変更されない", () => {
+  const codeNode: Code = {
+    type: "code",
+    value: "plain text",
+  };
+  const tree: Root = { type: "root", children: [codeNode] };
+
+  applyPlugin(remarkCodeBlockFilename, undefined)(tree);
+
+  assertEquals(codeNode.lang, undefined);
+  assertEquals(codeNode.meta, undefined);
+});
 
 // --- remarkAddInlineCodeLang ---
 
