@@ -19,9 +19,13 @@ const Item = ({ page }: { page: Lume.Page }) => {
 };
 
 export default (data: Lume.Data) => {
-  const datas = data.search.pages(
-    "layout=/layouts/Article.tsx",
-    "createdAt=desc",
+  const datas = data.search.pages("layout=/layouts/Article.tsx").sort(
+    (a, b) => {
+      if (!a.createdAt || !b.createdAt) {
+        return 0;
+      }
+      return Temporal.ZonedDateTime.compare(b.createdAt, a.createdAt);
+    },
   );
 
   return (
