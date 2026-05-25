@@ -24,7 +24,6 @@ export default (
       </head>
       <body className="container">
         <section className="content">
-          {/* @ts-expect-error TS2322 */}
           {children}
         </section>
       </body>

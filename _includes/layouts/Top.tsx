@@ -39,7 +39,10 @@ export default (data: Lume.Data) => {
           </h1>
         )}
         <ul className="list">
-          {datas.map(({ page }, index) => <Item key={index} page={page} />)}
+          {datas.map(({ page }, index) => (
+            // @ts-expect-error: ssx JSX types lack intrinsic key attribute
+            <Item key={index} page={page} />
+          ))}
         </ul>
       </article>
     </Layout>
