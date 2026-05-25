@@ -4,13 +4,3 @@
  */
 export const formatDate = (dt: Temporal.ZonedDateTime): string =>
   dt.toString({ timeZoneName: "never" });
-
-/**
- * Date を Temporal.ZonedDateTime に変換する。
- */
-export const parseDateToZonedDateTime = (
-  date: Date,
-): Temporal.ZonedDateTime => {
-  return Temporal.Instant.fromEpochMilliseconds(date.getTime())
-    .toZonedDateTimeISO(Temporal.Now.timeZoneId());
-};

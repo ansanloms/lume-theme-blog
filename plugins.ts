@@ -32,7 +32,6 @@ import {
 import { merge } from "lume/core/utils/object.ts";
 import { visit } from "./deps/unist-util-visit/index.ts";
 import type { Heading, Root } from "./deps/@types/mdast/index.ts";
-import { parseDateToZonedDateTime } from "./_includes/utils/date.ts";
 
 import "lume/types.ts";
 
@@ -243,12 +242,23 @@ export default function (userOptions?: Partial<Options>) {
 
           slugger.reset();
 
-          page.data.createdAt = page.data.createdAt instanceof Date
-            ? parseDateToZonedDateTime(page.data.createdAt)
-            : undefined;
-          page.data.updatedAt = page.data.updatedAt instanceof Date
-            ? parseDateToZonedDateTime(page.data.updatedAt)
-            : undefined;
+          try {
+            page.data.createdAt = typeof page.data.createdAt === "string"
+              ? Temporal.PlainDateTime.from(page.data.createdAt)
+                .toZonedDateTime(Temporal.Now.timeZoneId())
+              : undefined;
+          } catch {
+            page.data.createdAt = undefined;
+          }
+
+          try {
+            page.data.updatedAt = typeof page.data.updatedAt === "string"
+              ? Temporal.PlainDateTime.from(page.data.updatedAt)
+                .toZonedDateTime(Temporal.Now.timeZoneId())
+              : undefined;
+          } catch {
+            page.data.updatedAt = undefined;
+          }
 
           // raw の markdown を追加する。
           all.push(Page.create({

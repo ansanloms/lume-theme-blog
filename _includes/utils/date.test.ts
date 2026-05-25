@@ -1,5 +1,5 @@
 import { assertEquals } from "jsr:@std/assert@1";
-import { formatDate, parseDateToZonedDateTime } from "./date.ts";
+import { formatDate } from "./date.ts";
 
 // --- formatDate ---
 
@@ -32,18 +32,4 @@ Deno.test("formatDate: 負のオフセットでも正しくフォーマットさ
   );
   const result = formatDate(dt);
   assertEquals(result, "2024-12-31T20:00:00-05:00");
-});
-
-// --- parseDateToZonedDateTime ---
-
-Deno.test("parseDateToZonedDateTime: エポックミリ秒が保持される", () => {
-  const date = new Date("2024-06-15T09:30:00.000Z");
-  const result = parseDateToZonedDateTime(date);
-  assertEquals(result.epochMilliseconds, date.getTime());
-});
-
-Deno.test("parseDateToZonedDateTime: Temporal.ZonedDateTime を返す", () => {
-  const date = new Date("2025-01-01T00:00:00.000Z");
-  const result = parseDateToZonedDateTime(date);
-  assertEquals(result instanceof Temporal.ZonedDateTime, true);
 });

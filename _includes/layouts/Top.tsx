@@ -4,8 +4,8 @@ import { formatDate } from "../utils/date.ts";
 import Layout from "../components/Layout.tsx";
 
 const Item = ({ page }: { page: Lume.Page }) => {
-  const createdAt = page.data.article?.createdAt
-    ? formatDate(page.data.article.createdAt)
+  const createdAt = page.data.createdAt
+    ? formatDate(page.data.createdAt)
     : undefined;
 
   return (
@@ -21,7 +21,7 @@ const Item = ({ page }: { page: Lume.Page }) => {
 export default (data: Lume.Data) => {
   const datas = data.search.pages(
     "layout=/layouts/Article.tsx",
-    "article.createdAt=desc",
+    "createdAt=desc",
   );
 
   return (
