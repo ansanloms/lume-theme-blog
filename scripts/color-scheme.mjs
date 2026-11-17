@@ -6,8 +6,10 @@
  * @return {boolean}
  */
 const isDark = () => {
-  return globalThis.window.matchMedia &&
-    globalThis.window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return (
+    globalThis.window.matchMedia &&
+    globalThis.window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
 };
 
 /**

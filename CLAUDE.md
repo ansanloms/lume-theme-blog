@@ -5,32 +5,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-deno task build          # 本番ビルド (_site/ に出力)
-deno task serve          # 開発サーバ起動 (ホットリロード付き)
-deno task test           # 全テスト実行 (--parallel --coverage)
-deno task check          # 型チェック
-deno task lint           # lint + fmt チェック
-deno task fix            # lint --fix + fmt 自動修正
+npm run build            # 本番ビルド (_site/ に出力)
+npm run serve            # 開発サーバ起動 (ホットリロード付き)
+npm test                 # 全テスト実行 (node:test + tsx)
+npm run check            # 型チェック (tsc --noEmit)
+npm run lint             # oxlint + oxfmt チェック
+npm run fix              # oxlint --fix + oxfmt 自動修正
 ```
 
 単一テストファイルの実行:
 
 ```bash
-deno test -A _includes/utils/date.test.ts
+node --import tsx --import temporal-polyfill/global --test _includes/utils/date.test.ts
 ```
 
 ## Architecture
 
-Lume v3 (Deno 製 SSG) 用のブログテーマプラグイン。利用側は `site.use(blog())` で一括適用する。
+Lume 4 (Node 24 製 SSG) 用のブログテーマプラグイン。利用側は `site.use(blog())` で一括適用する。
 
 ### エントリポイントの二層構造
 
-- **`mod.ts`** — テーマの公開エントリポイント。`plugins.ts` を呼び出した後、レイアウト・スタイル・スクリプト等のアセットファイルを `remoteFile` で利用先サイトに登録する。
+- **`mod.ts`** — テーマの公開エントリポイント。`plugins.ts` を呼び出した後、レイアウト・スタイル・スクリプト等のアセットファイルを `site.remote` + `site.add` で利用先サイトに登録する。
 - **`plugins.ts`** — Markdown 処理パイプラインの構成が中心。remark/rehype プラグインチェーン (GFM, extended table, admonitions, Shiki シンタックスハイライト, slug, autolink headings) と Mermaid プラグインを組み立てる。`preprocess` フックで frontmatter の `createdAt`/`updatedAt` を `Temporal.ZonedDateTime` に変換する。
 
-### deps/ ディレクトリ
+### 依存
 
-npm/URL の外部依存をバージョン固定の再エクスポートファイルとして集約している。依存の追加・更新時はここにラッパーファイルを作り、プロジェクト内では `./deps/...` 経由で import する。
+外部依存は `package.json` でバージョンを固定し、パッケージ名で直接 import する。TS のまま配布する (`main: "mod.ts"`)。利用側は lume CLI (tsx 経由) で `node_modules` 内の `.ts` を読む。
 
 ### _includes/
 
@@ -40,4 +40,4 @@ npm/URL の外部依存をバージョン固定の再エクスポートファイ
 
 ### examples/
 
-テーマの利用例。`deno.json` の import map `"lume-theme-blog/"` でリポジトリルートを自己参照している。
+テーマの利用例。`examples/_config.ts` が `../mod.ts` を直接 import する。依存はルートの `node_modules` を使う。

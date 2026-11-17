@@ -1,19 +1,17 @@
-import "lume/types.ts";
+import "@lumeland/core/types.ts";
 
-export default (
-  { data, children }: {
-    data: Lume.Data;
-    children: Lume.Data["children"];
-  },
-) => {
+export default ({
+  data,
+  children,
+}: {
+  data: Lume.Data;
+  children: Lume.Data["children"];
+}) => {
   return (
     <html lang={data.lang ?? "en"}>
       <head>
         <meta charSet="UTF-8" />
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0"
-        />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{data.title ?? ""}</title>
         <script type="module" src="/scripts/color-scheme.mjs" />
         <link rel="stylesheet" href="/styles/palette.css" />
@@ -23,9 +21,7 @@ export default (
         <link rel="stylesheet" href="/styles/shiki.css" />
       </head>
       <body className="container">
-        <section className="content">
-          {children}
-        </section>
+        <section className="content">{children}</section>
       </body>
     </html>
   );

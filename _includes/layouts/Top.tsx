@@ -1,4 +1,4 @@
-import "lume/types.ts";
+import "@lumeland/core/types.ts";
 
 import { formatDate } from "../utils/date.ts";
 import Layout from "../components/Layout.tsx";
@@ -19,14 +19,14 @@ const Item = ({ page }: { page: Lume.Page }) => {
 };
 
 export default (data: Lume.Data) => {
-  const datas = data.search.pages("layout=/layouts/Article.tsx").sort(
-    (a, b) => {
+  const datas = data.search
+    .pages("layout=/layouts/Article.tsx")
+    .sort((a: Lume.Data, b: Lume.Data) => {
       if (!a.createdAt || !b.createdAt) {
         return 0;
       }
       return Temporal.ZonedDateTime.compare(b.createdAt, a.createdAt);
-    },
-  );
+    });
 
   return (
     <Layout data={data}>
@@ -37,7 +37,7 @@ export default (data: Lume.Data) => {
           </h1>
         )}
         <ul className="list">
-          {datas.map(({ page }, index) => (
+          {datas.map(({ page }: Lume.Data, index: number) => (
             // @ts-expect-error: ssx JSX types lack intrinsic key attribute
             <Item key={index} page={page} />
           ))}
