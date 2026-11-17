@@ -20,7 +20,7 @@
     "@lumeland/plugin-remark": "1.0.1",
     "@lumeland/plugin-resolve-urls": "1.0.0",
     "@lumeland/ssx": "0.1.16",
-    "@shikijs/rehype": "4.1.0",
+    "@shikijs/rehype": "4.6.0",
     "@shikijs/transformers": "4.1.0",
     "@types/mdast": "4.0.4",
     "github-slugger": "2.0.0",
