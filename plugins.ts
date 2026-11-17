@@ -4,7 +4,9 @@ import jsx from "@lumeland/plugin-jsx";
 import nav from "@lumeland/plugin-nav";
 import pagefind from "@lumeland/plugin-pagefind";
 import remark from "@lumeland/plugin-remark";
-import mermaid, { type Options as MermaidOptions } from "lume-plugin-mermaid";
+import mermaid, {
+  type Options as MermaidOptions,
+} from "@ansanloms/lume-plugin-mermaid";
 import rehypeSlug from "rehype-slug";
 import GithubSlugger from "github-slugger";
 import {
