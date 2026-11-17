@@ -1,3 +1,6 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource @lumeland/ssx */
+
 import "@lumeland/core/types.ts";
 
 import { formatDate } from "../utils/date.ts";

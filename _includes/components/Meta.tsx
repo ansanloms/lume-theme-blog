@@ -1,3 +1,6 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource @lumeland/ssx */
+
 export type MetaItemProps = { label: string; value: string };
 
 const MetaItem = ({ label, value }: MetaItemProps) => {

@@ -1,3 +1,6 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource @lumeland/ssx */
+
 import "@lumeland/core/types.ts";
 
 export default ({
