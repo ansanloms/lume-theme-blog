@@ -1,0 +1,8 @@
+{
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "lume build",
+    "serve": "lume build -s"
+  }
+}

@@ -1,4 +1,4 @@
-import "lume/types.ts";
+import "@lumeland/core/types.ts";
 
 import Layout from "../components/Layout.tsx";
 import { formatDate } from "../utils/date.ts";
@@ -23,9 +23,7 @@ export default (data: Lume.Data) => {
   return (
     <Layout data={data}>
       {metas.length > 0 && <Meta items={metas} />}
-      <article className="article">
-        {data.children}
-      </article>
+      <article className="article">{data.children}</article>
     </Layout>
   );
 };

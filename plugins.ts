@@ -1,39 +1,36 @@
-import basePath from "lume/plugins/base_path.ts";
-import resolveUrls from "lume/plugins/resolve_urls.ts";
-import jsx from "lume/plugins/jsx.ts";
-import nav from "lume/plugins/nav.ts";
-import { Page } from "lume/core/file.ts";
-import pagefind from "lume/plugins/pagefind.ts";
-import mermaid, {
-  type Options as MermaidOptions,
-} from "./deps/lume-plugin-mermaid/mod.ts";
-import remark from "lume/plugins/remark.ts";
-import remarkGfm from "./deps/remark-gfm/index.ts";
-import rehypeSlug from "./deps/rehype-slug/index.ts";
-import GithubSlugger from "./deps/github-slugger/index.ts";
+import basePath from "@lumeland/plugin-base-path";
+import resolveUrls from "@lumeland/plugin-resolve-urls";
+import jsx from "@lumeland/plugin-jsx";
+import nav from "@lumeland/plugin-nav";
+import pagefind from "@lumeland/plugin-pagefind";
+import remark from "@lumeland/plugin-remark";
+import mermaid, { type Options as MermaidOptions } from "lume-plugin-mermaid";
+import rehypeSlug from "rehype-slug";
+import GithubSlugger from "github-slugger";
 import {
   extendedTableHandlers,
   remarkExtendedTable,
-} from "./deps/remark-extended-table/index.ts";
-import remarkGithubBetaBlockquoteAdmonitions from "./deps/remark-github-beta-blockquote-admonitions/index.ts";
-import rehypeAutolinkHeadings from "./deps/rehype-autolink-headings/index.ts";
-import rehypeShiki from "./deps/@shikijs/rehype/index.ts";
+} from "remark-extended-table";
+import remarkGithubBetaBlockquoteAdmonitions from "remark-github-beta-blockquote-admonitions";
+import rehypeAutolinkHeadings from "rehype-autolink-headings";
+import rehypeShiki from "@shikijs/rehype";
 import {
   transformerMetaHighlight,
   transformerMetaWordHighlight,
   transformerNotationFocus,
-} from "./deps/@shikijs/transformers/index.ts";
-import {
-  rehypeStringify,
-  remarkParse,
-  remarkRehype,
-  unified,
-} from "lume/deps/remark.ts";
-import { merge } from "lume/core/utils/object.ts";
-import { visit } from "./deps/unist-util-visit/index.ts";
-import type { Heading, Root } from "./deps/@types/mdast/index.ts";
+} from "@shikijs/transformers";
+import rehypeStringify from "rehype-stringify";
+import remarkParse from "remark-parse";
+import remarkRehype from "remark-rehype";
+import { type Plugin, unified } from "unified";
+import { readFile } from "node:fs/promises";
+import { Page } from "@lumeland/core/file.ts";
+import type Site from "@lumeland/core/site.ts";
+import { merge } from "@lumeland/core/utils/object.ts";
+import { visit } from "unist-util-visit";
+import type { Heading, Root } from "mdast";
 
-import "lume/types.ts";
+import "@lumeland/core/types.ts";
 
 /**
  * markdown の設定。
@@ -68,7 +65,12 @@ export interface Options {
   /**
    * Meramid の設定。
    */
-  mermaid: Omit<MermaidOptions, "config"> & {
+  mermaid: Omit<MermaidOptions, "config" | "zoom"> & {
+    /**
+     * パン・ズームの設定。省略時は lume-plugin-mermaid の既定値。
+     */
+    zoom?: MermaidOptions["zoom"];
+
     /**
      * Mermaid initialize 時の設定。
      */
@@ -113,8 +115,7 @@ export const defaults: Options = {
         // 注意: CC-BY-ND-2.0
         // aws-icons-mermaid.json 内に記述あり。
         // ビルド結果にそのままこの json が含まれるからそれでいいはず。
-        url:
-          "https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/refs/tags/v23.0/dist/aws-icons-mermaid.json",
+        url: "https://raw.githubusercontent.com/awslabs/aws-icons-for-plantuml/refs/tags/v23.0/dist/aws-icons-mermaid.json",
       },
     ],
     querySelector: "pre > code[data-language='mermaid']",
@@ -128,7 +129,7 @@ export const defaults: Options = {
  * `typescript:test.ts` のように指定すると、`node.lang` を `typescript` に修正し、
  * `filename=test.ts` を `node.meta` に付加する。
  */
-export const remarkCodeBlockFilename: unified.Plugin<[], Root> = () => {
+export const remarkCodeBlockFilename: Plugin<[], Root> = () => {
   return (tree) => {
     visit(tree, "code", (node) => {
       if (!node.lang) {
@@ -153,9 +154,12 @@ export const remarkCodeBlockFilename: unified.Plugin<[], Root> = () => {
  */
 export const transformerFilename = () => ({
   name: "transformer-filename",
-  pre(this: { options: { meta?: { __raw?: string } } }, node: {
-    properties: Record<string, unknown>;
-  }) {
+  pre(
+    this: { options: { meta?: { __raw?: string } } },
+    node: {
+      properties: Record<string, unknown>;
+    },
+  ) {
     const raw = this.options.meta?.__raw;
     if (!raw) {
       return;
@@ -171,15 +175,12 @@ export const transformerFilename = () => ({
  * shiki で利用するインラインコードのデフォルト言語を指定する。
  * @see https://shiki.style/packages/rehype#inline-code
  */
-export const remarkAddInlineCodeLang: unified.Plugin<
-  [{ default?: string }?],
-  Root
-> = (
+export const remarkAddInlineCodeLang: Plugin<[{ default?: string }?], Root> = (
   options,
 ) => {
   return (tree) => {
     visit(tree, "inlineCode", (node) => {
-      if (!(node.value.match(/(.+)\{:([\w-]+)\}$/))) {
+      if (!node.value.match(/(.+)\{:([\w-]+)\}$/)) {
         node.value = `${node.value}{:${options?.default ?? "txt"}}`;
       }
     });
@@ -189,12 +190,10 @@ export const remarkAddInlineCodeLang: unified.Plugin<
 /**
  * 任意の言語をハイライト対象外にする。
  */
-export const remarkRemoveShikiHighlight: unified.Plugin<
+export const remarkRemoveShikiHighlight: Plugin<
   [{ excludeLanguages: string[] }],
   Root
-> = (
-  { excludeLanguages },
-) => {
+> = ({ excludeLanguages }) => {
   return (tree) => {
     visit(tree, "code", (node) => {
       if (node.lang && excludeLanguages.includes(node.lang)) {
@@ -214,63 +213,76 @@ export const remarkRemoveShikiHighlight: unified.Plugin<
 export default function (userOptions?: Partial<Options>) {
   const options = merge(defaults, userOptions);
 
-  return (site: Lume.Site) => {
+  return (site: Site) => {
     site
       .data("layout", "/layouts/Article.tsx")
       .use(basePath())
       .use(resolveUrls())
       .use(jsx())
       .use(nav())
-      .use(pagefind())
+      .use(pagefind({ componentUI: false }))
       .use(
         remark({
           remarkPlugins: [
-            remarkGfm,
             remarkExtendedTable,
             remarkCodeBlockFilename,
             [remarkAddInlineCodeLang, { default: "txt" }],
-            [remarkRemoveShikiHighlight, {
-              excludeLanguages: options.markdown.syntaxHighlight.exclude,
-            }],
-            [remarkGithubBetaBlockquoteAdmonitions, {
-              classNameMaps: {
-                block: (title: string) => ["admonition", title.toLowerCase()],
-                title: (
-                  title: string,
-                ) => ["admonitionTitle", title.toLowerCase()],
+            [
+              remarkRemoveShikiHighlight,
+              {
+                excludeLanguages: options.markdown.syntaxHighlight.exclude,
               },
-            }],
-            [remarkRehype, {
-              handlers: extendedTableHandlers,
-            }],
+            ],
+            [
+              remarkGithubBetaBlockquoteAdmonitions,
+              {
+                classNameMaps: {
+                  block: (title: string) => ["admonition", title.toLowerCase()],
+                  title: (title: string) => [
+                    "admonitionTitle",
+                    title.toLowerCase(),
+                  ],
+                },
+              },
+            ],
           ],
+          rehypeOptions: {
+            allowDangerousHtml: true,
+            handlers: extendedTableHandlers,
+          },
           rehypePlugins: [
             rehypeSlug,
-            [rehypeAutolinkHeadings, {
-              behavior: "wrap",
-            }],
-            [rehypeShiki, {
-              addLanguageClass: true,
-              themes: options.markdown.syntaxHighlight.themes,
-              defaultColor: false,
-              defaultLanguage: "", // 明示的に空にしないと txt 相当でハイライトされる。
-              inline: "tailing-curly-colon",
-              onError: (error: unknown) => {
-                console.warn(String(error));
+            [
+              rehypeAutolinkHeadings,
+              {
+                behavior: "wrap",
               },
-              transformers: [
-                transformerMetaHighlight(),
-                transformerMetaWordHighlight(),
-                transformerNotationFocus(),
-                transformerFilename(),
-              ],
-            }],
+            ],
+            [
+              rehypeShiki,
+              {
+                addLanguageClass: true,
+                themes: options.markdown.syntaxHighlight.themes,
+                defaultColor: false,
+                defaultLanguage: "", // 明示的に空にしないと txt 相当でハイライトされる。
+                inline: "tailing-curly-colon",
+                onError: (error: unknown) => {
+                  console.warn(String(error));
+                },
+                transformers: [
+                  transformerMetaHighlight(),
+                  transformerMetaWordHighlight(),
+                  transformerNotationFocus(),
+                  transformerFilename(),
+                ],
+              },
+            ],
           ],
         }),
       )
       .use(mermaid(options.mermaid))
       .preprocess([".md"], async (pages, all) => {
-        const processor = unified.unified()
+        const processor = unified()
           .use(remarkParse)
           .use(remarkRehype)
           .use(rehypeStringify);
@@ -281,39 +293,47 @@ export default function (userOptions?: Partial<Options>) {
           const content = processor.parse(String(page.data.content));
 
           if (typeof page.data.title === "undefined") {
-            page.data.title =
-              (content.children.find((child): child is Heading =>
-                child.type === "heading" && child.depth === 1
-              ))?.children.find((child) => child.type === "text")?.value;
+            page.data.title = content.children
+              .find(
+                (child): child is Heading =>
+                  child.type === "heading" && child.depth === 1,
+              )
+              ?.children.find((child) => child.type === "text")?.value;
           }
 
           slugger.reset();
 
           try {
-            page.data.createdAt = typeof page.data.createdAt === "string"
-              ? Temporal.PlainDateTime.from(page.data.createdAt)
-                .toZonedDateTime(Temporal.Now.timeZoneId())
-              : undefined;
+            page.data.createdAt =
+              typeof page.data.createdAt === "string"
+                ? Temporal.PlainDateTime.from(
+                    page.data.createdAt,
+                  ).toZonedDateTime(Temporal.Now.timeZoneId())
+                : undefined;
           } catch {
             page.data.createdAt = undefined;
           }
 
           try {
-            page.data.updatedAt = typeof page.data.updatedAt === "string"
-              ? Temporal.PlainDateTime.from(page.data.updatedAt)
-                .toZonedDateTime(Temporal.Now.timeZoneId())
-              : undefined;
+            page.data.updatedAt =
+              typeof page.data.updatedAt === "string"
+                ? Temporal.PlainDateTime.from(
+                    page.data.updatedAt,
+                  ).toZonedDateTime(Temporal.Now.timeZoneId())
+                : undefined;
           } catch {
             page.data.updatedAt = undefined;
           }
 
           // raw の markdown を追加する。
-          all.push(Page.create({
-            url: page.src.path + page.src.ext,
-            content: page.src.entry?.src
-              ? await Deno.readTextFile(page.src.entry.src)
-              : "",
-          }));
+          all.push(
+            Page.create({
+              url: page.src.path + page.src.ext,
+              content: page.src.entry?.src
+                ? await readFile(page.src.entry.src, "utf8")
+                : "",
+            }),
+          );
         }
       });
   };
@@ -321,7 +341,7 @@ export default function (userOptions?: Partial<Options>) {
 
 declare global {
   namespace Lume {
-    export interface Data {
+    export interface GlobalData {
       /**
        * markdown の設定。
        */

@@ -1,11 +1,12 @@
 import plugins, { Options } from "./plugins.ts";
 
-import "lume/types.ts";
+import "@lumeland/core/types.ts";
+import type Site from "@lumeland/core/site.ts";
 
 export type { Options } from "./plugins.ts";
 
 export default (options: Partial<Options> = {}) => {
-  return (site: Lume.Site) => {
+  return (site: Site) => {
     site.use(plugins(options));
 
     [
@@ -21,7 +22,7 @@ export default (options: Partial<Options> = {}) => {
       "scripts/color-scheme.mjs",
       "scripts/mermaid.mjs",
     ].forEach((file) => {
-      site.remoteFile(file, import.meta.resolve(`./${file}`));
+      site.remote(`/${file}`, import.meta.resolve(`./${file}`));
       if (!file.startsWith("_")) {
         site.add(`/${file}`);
       }
