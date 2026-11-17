@@ -1,6 +1,6 @@
 {
-  "name": "lume-theme-blog",
-  "version": "0.2.1",
+  "name": "@ansanloms/lume-theme-blog",
+  "version": "0.2.2",
   "private": true,
   "type": "module",
   "main": "mod.ts",
@@ -13,6 +13,7 @@
     "test": "node --import tsx --import temporal-polyfill/global --test \"**/*.test.ts\""
   },
   "dependencies": {
+    "@ansanloms/lume-plugin-mermaid": "github:ansanloms/lume-plugin-mermaid#0.1.1",
     "@lumeland/plugin-base-path": "1.0.0",
     "@lumeland/plugin-jsx": "1.0.0",
     "@lumeland/plugin-nav": "1.0.0",
@@ -20,11 +21,10 @@
     "@lumeland/plugin-remark": "1.0.1",
     "@lumeland/plugin-resolve-urls": "1.0.0",
     "@lumeland/ssx": "0.1.16",
-    "@shikijs/rehype": "4.1.0",
-    "@shikijs/transformers": "4.1.0",
+    "@shikijs/rehype": "4.6.0",
+    "@shikijs/transformers": "4.6.0",
     "@types/mdast": "4.0.4",
     "github-slugger": "2.0.0",
-    "lume-plugin-mermaid": "github:ansanloms/lume-plugin-mermaid#0.1.0",
     "rehype-autolink-headings": "7.1.0",
     "rehype-slug": "6.0.0",
     "rehype-stringify": "10.0.1",
@@ -33,12 +33,12 @@
     "remark-parse": "11.0.0",
     "remark-rehype": "11.1.2",
     "unified": "11.0.5",
-    "unist-util-visit": "5.1.0"
+    "unist-util-visit": "5.2.0"
   },
   "devDependencies": {
     "@lumeland/lume": "4.0.2",
-    "@types/node": "24.19.2",
-    "oxfmt": "0.76.0",
+    "@types/node": "26.6.6",
+    "oxfmt": "0.78.0",
     "oxlint": "1.94.0",
     "temporal-polyfill": "1.0.8",
     "tsx": "4.23.15",

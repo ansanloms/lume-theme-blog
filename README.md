@@ -11,14 +11,14 @@
 
 ```bash
 npm i @lumeland/lume
-npm i github:ansanloms/lume-theme-blog#0.2.1
+npm i github:ansanloms/lume-theme-blog#0.2.2
 ```
 
 `_config.ts` で `blog()` を適用する。
 
 ```ts
 import lume from "@lumeland/lume";
-import blog from "lume-theme-blog";
+import blog from "@ansanloms/lume-theme-blog";
 
 const site = lume({ src: "./docs" });
 
