@@ -11,7 +11,7 @@
 
 ```bash
 npm i @lumeland/lume
-npm i github:ansanloms/lume-theme-blog#0.2.0
+npm i github:ansanloms/lume-theme-blog#0.2.1
 ```
 
 `_config.ts` で `blog()` を適用する。

@@ -1,3 +1,6 @@
+/** @jsxRuntime automatic */
+/** @jsxImportSource @lumeland/ssx */
+
 import "@lumeland/core/types.ts";
 
 import Layout from "../components/Layout.tsx";
