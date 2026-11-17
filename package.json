@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@lumeland/lume": "4.0.2",
-    "@types/node": "24.19.2",
+    "@types/node": "26.6.6",
     "oxfmt": "0.76.0",
     "oxlint": "1.94.0",
     "temporal-polyfill": "1.0.8",
